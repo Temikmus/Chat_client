@@ -76,11 +76,10 @@ int main() {
 
     // Запуск потока для приема сообщений от сервера
     std::thread receiveThread(receiveMessages, clientSocket);
-
+    std::string message;
     while (true) {
-        std::string message;
+        message.clear();
         std::getline(std::cin, message);
-
         // Отправка сообщения на сервер
         iResult = send(clientSocket, message.c_str(), message.size(), 0);
         if (iResult == SOCKET_ERROR) {
@@ -89,13 +88,12 @@ int main() {
             WSACleanup();
             return 1;
         }
+        if (message=="exit")
+            break;
     }
-
     // Закрытие сокета клиента и завершение работы Winsock
     closesocket(clientSocket);
     WSACleanup();
-
     receiveThread.join(); // Дождаться завершения потока приема сообщений
-
     return 0;
 }
